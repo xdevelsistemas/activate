@@ -3,6 +3,8 @@ import Keys._
 
 object ActivateBuild extends Build {
 
+
+
     /* Core dependencies */
     val javassist = "org.javassist" % "javassist" % "3.18.2-GA"
     val radonStm = "net.fwbrasil" %% "radon-stm" % "1.7"
@@ -261,23 +263,33 @@ object ActivateBuild extends Build {
         "Alfesco" at "https://maven.alfresco.com/nexus/content/groups/public/"
     )
 
+
+
     def commonSettings =
         Defaults.defaultSettings ++ Seq(
             organization := "net.fwbrasil",
             version := "1.7",
-            scalaVersion := "2.11.2",
+            scalaVersion := "2.11.6",
             javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
             publishMavenStyle := true,
             // publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository"))), 
             // publishTo := Option(Resolver.ssh("fwbrasil.net repo", "fwbrasil.net", 8080) as("maven") withPermissions("0644")),
+//            publishTo <<= version { v: String =>
+//                val nexus = "http://nexus.xdevel.com.br/"
+//                val fwbrasil = "http://fwbrasil.net/maven/"
+//                if (v.trim.endsWith("SNAPSHOT"))
+//                    Option(Resolver.ssh("fwbrasil.net repo", "fwbrasil.net", 8080) as ("maven") withPermissions ("0644"))
+//                else
+//                    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+//            },
             publishTo <<= version { v: String =>
-                val nexus = "https://oss.sonatype.org/"
-                val fwbrasil = "http://fwbrasil.net/maven/"
+                val nexus = "http://nexus.xdevel.com.br/"
                 if (v.trim.endsWith("SNAPSHOT"))
-                    Option(Resolver.ssh("fwbrasil.net repo", "fwbrasil.net", 8080) as ("maven") withPermissions ("0644"))
+                    Some("snapshots" at nexus + "content/repositories/snapshots")
                 else
-                    Some("releases" at nexus + "service/local/staging/deploy/maven2")
-            },
+                    Some("releases" at nexus + "content/repositories/releases")},
+
+            credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
             resolvers ++= customResolvers,
             publishMavenStyle := true,
             publishArtifact in Test := false,
