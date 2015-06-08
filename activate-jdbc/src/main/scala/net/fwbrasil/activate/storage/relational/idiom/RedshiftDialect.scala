@@ -43,6 +43,12 @@ class redshiftDialect(pEscape: String => String, pNormalize: String => String) e
     pEscape(pNormalize(string))
 
 
+  override def findTableStatement(tableName: String) =
+    "SELECT COUNT(1) " +
+      "  FROM INFORMATION_SCHEMA.TABLES " +
+      " WHERE TABLE_NAME = '" + pNormalize(tableName) + "'"
+
+
 
   //dont exists index
   override def findIndexStatement(tableName: String, indexName: String) =
